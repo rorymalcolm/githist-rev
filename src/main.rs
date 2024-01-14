@@ -41,8 +41,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let mut rows = stmt.query([])?;
             while let Some(row) = rows.next()? {
                 let id: String = row.get(0)?;
-                let command: String = row.get(1)?;
-                if !command_is_mutate(&command) {
+                let command: String = serde_json::from_str(&row.get(1)?)?;
+                if !command_is_mutate(GitCommandState::extract_git_command(&command)?) {
                     continue;
                 }
                 let created_at: String = row.get(2)?;
@@ -85,38 +85,38 @@ fn add_command_history(
     Ok(())
 }
 
-fn command_is_mutate(command: &str) -> bool {
+fn command_is_mutate(command: GitCommand) -> bool {
     match command {
-        "add" => true,
-        "apply" => true,
-        "bisect" => true,
-        "branch" => true,
-        "checkout" => true,
-        "cherry-pick" => true,
-        "clean" => true,
-        "clone" => true,
-        "commit" => true,
-        "fetch" => true,
-        "filter-branch" => true,
-        "fsck" => true,
-        "gc" => true,
-        "init" => true,
-        "merge" => true,
-        "mv" => true,
-        "pull" => true,
-        "push" => true,
-        "rebase" => true,
-        "remote" => true,
-        "reset" => true,
-        "restore" => true,
-        "rm" => true,
-        "stash" => true,
-        "submodule" => true,
-        "switch" => true,
-        "tag" => true,
-        "update-index" => true,
-        "update-ref" => true,
-        "write-tree" => true,
+        GitCommand::Add => true,
+        GitCommand::Apply => true,
+        GitCommand::Bisect => true,
+        GitCommand::Branch => true,
+        GitCommand::Checkout => true,
+        GitCommand::CherryPick => true,
+        GitCommand::Clean => true,
+        GitCommand::Clone => true,
+        GitCommand::Commit => true,
+        GitCommand::Fetch => true,
+        GitCommand::FilterBranch => true,
+        GitCommand::Fsck => true,
+        GitCommand::Gc => true,
+        GitCommand::Init => true,
+        GitCommand::Merge => true,
+        GitCommand::Mv => true,
+        GitCommand::Pull => true,
+        GitCommand::Push => true,
+        GitCommand::Rebase => true,
+        GitCommand::Remote => true,
+        GitCommand::Reset => true,
+        GitCommand::Restore => true,
+        GitCommand::Rm => true,
+        GitCommand::Stash => true,
+        GitCommand::Submodule => true,
+        GitCommand::Switch => true,
+        GitCommand::Tag => true,
+        GitCommand::UpdateIndex => true,
+        GitCommand::UpdateRef => true,
+        GitCommand::WriteTree => true,
         _ => false,
     }
 }
